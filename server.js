@@ -66,25 +66,23 @@ function getNextSequence(name,cb){
 	// db.collection('test').insert({a:'aa',b:'hello'});
 // });
 
-var Schema = mongoose.Schema;
-
-var activitySchema = new Schema({
-  activity_id: Number,
-  athlete: {
-    id: Number
-  },
-  name: String,
-  distance: Number,
-  elapsed_time: Number,
-  type: String,
-  start_date: Date,
-  like_count: Number,
-  comment_count: Number,
-  photo_count: Number,
-  workout_type: Number
-});
-
-var Activity = mongoose_connection.model('Activity', activitySchema);
+// var Schema = mongoose.Schema;
+//
+// var activitySchema = new Schema({
+//   activity_id: Number,
+// 	athlete_id:Number,
+//   name: String,
+//   distance: Number,
+//   elapsed_time: Number,
+//   type: String,
+//   start_date: Date,
+//   like_count: Number,
+//   comment_count: Number,
+//   photo_count: Number,
+//   workout_type: Number
+// });
+//
+// var Activity = mongoose_connection.model('Activity', activitySchema);
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -97,95 +95,91 @@ app.use(express.static('public'));
 
 var router = express.Router();
 
-app.use('/api', router);
 
-// get all activities..
-router.route('/activities').get(function(req, res) {
-  Activity.find({}, function(err, activities) {
-    if (err) throw err;
-    console.log(activities);
-    res.json(activities);
-  });
-});
 
-//create new issue..
-router.route('/activities').post(function(req, res) {
-  console.log(req.body);
-  var data = req.body;
-  console.log("body :", typeof data);
 
-	getNextSequence('activity_id',function(seq){
-	  var dataParams = {
-		activity_id: seq,
-		athlete: data.athlete,
-		name: data.name,
-		distance: data.distance,
-		elapsed_time: data.elapsed_time,
-		type: data.type,
-		start_date: data.start_date,
-		like_count: data.like_count,
-		comment_count: data.comment_count,
-		photo_count: data.photo_count,
-		workout_type: data.workout_type
-	  }
-
-	  console.log("data params : ", dataParams);
-	  var activity = new Activity(dataParams);
-		console.log('saving data',activity);
-	  activity.save(function(err, response) {
-		console.log("save respose", response);
-		if (err) res.send(err);
-
-		res.json({
-		  message: 'Activity created successfully..',
-		  id: id_count
-		})
-	  });
-	});
-});
 
 //get athlete
 router.route('/athlete/:id').get(function(req,res){
   console.log('getting athlete ', req.params);
-	var users = db_obj.collection('users');
+	var athletes = db_obj.collection('athletes');
+	var athlete_id = parseInt(req.params.id);
 
-});
-
-//post athlete
-router.route('/athlete/:id').post(function(req,res){
-
-
-	var users = db_obj.collection('users');
-
-	users.find({athlete_id : req.params.id},function(err,cursor){
-		var len = cursor.toArray().length;
-
-		if(len){
-			//if athlete present, send a msg saying athlete already present and return his athlete_id..
-		} else {
-			// else register the new athlete and return his athlete_id..
-		}
-
+	athletes.find({athlete_id:athlete_id}).toArray(function(err,docs){
+		console.log(docs);
+		var athlete = docs[0];
+		res.json(athlete);
 	});
-
-
-
-
 });
 
-
+// get all activities for a user
 router.route('/athlete/:id/activities').get(function(req,res){
-  console.log('getting activities ', req.params);
+  console.log('getting activities for athlete_id ', req.params.id);
+	var activities_coll = db_obj.collection('activities');
+
+	activities_coll.find({athlete_id:parseInt(req.params.id,10)}).toArray(function(err,docs){
+		console.log('inside cb');
+		//if(err) console.log(err);
+		console.log(docs);
+		res.json(docs);
+	});
 });
 
+//create new activity..
+router.route('/athlete/:id/activities').post(function(req, res) {
+  console.log(req.body);
+  var data = req.body;
+  console.log("body :", typeof data);
+	var athlete_id = req.params.id;
+	getNextSequence('activity_id',function(seq){
+	  var dataParams = {
+			athlete_id:data.athlete_id,
+			activity_id: seq,
+			name: data.name,
+			distance: data.distance,
+			elapsed_time: data.elapsed_time,
+			type: data.type,
+			start_date: data.start_date,
+			like_count: data.like_count,
+			comment_count: data.comment_count,
+			photo_count: data.photo_count,
+			workout_type: data.workout_type
+	  };
+
+		var activity_coll = db_obj.collection('activities');
+
+		activity_coll.insert(dataParams,null,function(err,docs){
+			console.log(docs);
+			if (err) res.send(err);
+
+			res.json({
+			  message: 'Activity created successfully..',
+			  id: seq
+			});
+		});
+
+	  //console.log("data params : ", dataParams);
+	//  var activity = new Activity(dataParams);
+		//console.log('saving data',activity);
+	  // activity.save(function(err, response) {
+		// 	console.log("save respose", response);
+		//
+		// });
+	});
+});
+
+//get all activities for the user plus his friends - this is essentially the activity feed for the user
 router.route('/athlete/:id/friends/activities').get(function(req,res){
   console.log('getting friends activities');
+
 });
 
+// get a list of the user's friends
 router.route('/athlete/:id/friends').get(function(req,res){
   console.log('athlete\'s friends')
 });
 
+// login and verification
 router.route('/login').post(function(req,res){
 	var data = req.body;
 
@@ -196,6 +190,7 @@ router.route('/login').post(function(req,res){
 	//return;
 
 	var user_name = data.user_name;
+
 	console.log('finding the doc..')
 	var athletes = db_obj.collection('athletes');
 
@@ -204,8 +199,22 @@ router.route('/login').post(function(req,res){
 		// if no user is found, register the user..
 		if(docs.length == 0){
 			console.log('Registering new user');
+
 			getNextSequence('user_name',function(seq){
-				athletes.insert({user_name:user_name,athlete_id:seq},null,function(err,doc){
+				var dataObj = {
+					athlete_id:seq,
+					user_name : user_name,
+					firstname : data.firstname,
+					lastname : data.lastname,
+					profile_medium : data.profile_medium,
+					profile : data.profile,
+					city : data.city,
+					state : data.state,
+					country : data.country,
+					sex : data.sex,
+					email : data.email
+				}
+				athletes.insert(dataObj,null,function(err,doc){
 					res.json({message:user_name+" registered successfully",athlete_id:seq});
 				});
 			});
@@ -218,6 +227,13 @@ router.route('/login').post(function(req,res){
 	});
 
 });
+
+//record a new relationship..
+router.route('/graph').post(function(req,res){
+
+});
+
+app.use('/api', router);
 
 app.listen(port);
 
