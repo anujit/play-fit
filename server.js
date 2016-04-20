@@ -378,11 +378,19 @@ router.route('/athlete/:id/activities').post(function(req, res) {
 router.route('/athlete/:id/friends/activities').get(function(req,res){
   console.log('getting friends activities');
 
+
 });
 
 // get a list of the user's friends
 router.route('/athlete/:id/friends').get(function(req,res){
   console.log('athlete\'s friends')
+});
+
+router.route('/athletes').get(function(req,res){
+	var athletes_coll = db_obj.collection('athletes');
+	athletes_coll.find().toArray(function(err,docs){
+		res.json(docs);
+	});
 });
 
 // login and verification
