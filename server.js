@@ -397,6 +397,66 @@ router.route('/athletes').get(function(req,res){
 	});
 });
 
+router.route('/athletes/:user_name').put(function(req,res){
+	var athletes_coll = db_obj.collection('athletes');
+	athletes_coll.find({user_name : req.params.user_name}).toArray(function(err,docs){
+		
+		if(err) res.send(err);
+		
+		console.log(docs);
+	});	
+});
+
+router.route('/challenges/ride').get(function(req,res){
+	var ride_challenges = db_obj.collection('ride_challenges');
+	
+	ride_challenges.find().toArray(function(err,docs){
+		res.json(docs);
+	});
+})
+.post(function(req,res){
+	var data = req.body;
+	
+	var ride_challenges = db_obj.collection('ride_challenges');
+	
+	var dataObj = {
+		name : data.name,
+		date : new Date(),
+		status : data.status,
+		description : data.description
+	}
+	
+	ride_challenges.insert(dataObj,null,function(err,doc){
+		if(err) console.log('error in saving ride challenge');
+		res.json({status:1});
+	});	
+});
+
+router.route('/challenges/run').get(function(req,res){
+	var run_challenges = db_obj.collection('run_challenges');
+	
+	run_challenges.find().toArray(function(err,docs){
+		res.json(docs);
+	});	
+})
+.post(function(req,res){
+	var data = req.body;
+	
+	var run_challenges = db_obj.collection('run_challenges');
+	
+	var dataObj = {
+		name : data.name,
+		date : new Date(),
+		status : data.status,
+		description : data.description
+	}
+	
+	run_challenges.insert(dataObj,null,function(err,doc){
+		if(err) console.log('error in saving run challenge');
+		res.json({status:1});		
+	});
+});
+
 // login and verification
 router.route('/login').post(function(req,res){
 	var data = req.body;
@@ -430,7 +490,9 @@ router.route('/login').post(function(req,res){
 					state : data.state,
 					country : data.country,
 					sex : data.sex,
-					email : data.email
+					email : data.email,
+					is_premium : data.is_premium || false,
+					is_blocked : data.is_blocked || false
 				}
 				athletes.insert(dataObj,null,function(err,doc){
 					res.json({message:user_name+" registered successfully",athlete_id:seq});
