@@ -442,6 +442,13 @@ router.route('/challenges/ride').get(function(req,res){
   });	
 });
 
+router.route('/challenges/ride/:challenge_id').put(function(req,res){
+
+})
+.delete(function(req,res){
+
+});
+
 router.route('/challenges/run').get(function(req,res){
 	var run_challenges = db_obj.collection('run_challenges');
 	
