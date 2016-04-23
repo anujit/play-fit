@@ -92,6 +92,7 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 app.use(function(req, res, next) {
+  console.log(req.method);
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
@@ -419,22 +420,22 @@ router.route('/challenges/ride').get(function(req,res){
 	
 	var ride_challenges = db_obj.collection('ride_challenges');
 	
-  getNextSequence('challenge_id',function(res){
+  getNextSequence('challenge_id',function(challenge_id){
     var dataObj = {
       name : data.name,
-      challenge_id : data,
+      challenge_id : challenge_id,
+      challenge_type : data.challenge_type,
       start_date : new Date(data.start_date),
       end_date : new Date(data.end_date),
-      status : data.status,
       description : data.description,
       additional_info: data.additional_info,
       rules: data.rules,
-      prize_distance: data.badge_distance,
-      is_user_created:data.is_user_created,
-      is_inactive:data.is_inactive,
-      is_banned:data.is_banned,
+      prize_distance: data.prize_distance,
+      is_user_created:data.is_user_created == 'true' ? true : false,
+      is_active:data.is_active == 'true' ? true : false,
+      is_banned:data.is_banned == 'true' ? true : false,
       total_participants : 0
-    }
+    };
     ride_challenges.insert(dataObj,null,function(err,doc){
       if(err) console.log('error in saving ride challenge');
       res.json({status:1});
@@ -443,9 +444,23 @@ router.route('/challenges/ride').get(function(req,res){
 });
 
 router.route('/challenges/ride/:challenge_id').put(function(req,res){
+  db_obj.collection('ride_challenges').updateOne({"challenge_id":parseInt(req.params.challenge_id,10)},{
+    $set : req.body
+  },function(err,results) {
+    if (err) {console.log(err)};
 
+    res.json({status:1});
+  });
 })
 .delete(function(req,res){
+  var challenge_id = parseInt(req.params.challenge_id,10);
+
+  db_obj.collection('ride_challenges').deleteOne({
+    "challenge_id" : parseInt(req.params.challenge_id,10)
+  },function (err,results) {
+    if(err) console.log(err);
+    res.json({status:1});
+  });
 
 });
 
@@ -461,17 +476,47 @@ router.route('/challenges/run').get(function(req,res){
 	
 	var run_challenges = db_obj.collection('run_challenges');
 	
-	var dataObj = {
-		name : data.name,
-		date : new Date(),
-		status : data.status,
-		description : data.description
-	}
-	
-	run_challenges.insert(dataObj,null,function(err,doc){
-		if(err) console.log('error in saving run challenge');
-		res.json({status:1});		
-	});
+  getNextSequence('challenge_id',function(challenge_id){
+    var dataObj = {
+      name : data.name,
+      challenge_id : challenge_id,
+      challenge_type : data.challenge_type,
+      start_date : new Date(data.start_date),
+      end_date : new Date(data.end_date),
+      description : data.description,
+      additional_info: data.additional_info,
+      rules: data.rules,
+      prize_distance: data.prize_distance,
+      is_user_created:data.is_user_created == 'true' ? true : false,
+      is_active:data.is_active == 'true' ? true : false,
+      is_banned:data.is_banned == 'true' ? true : false,
+      total_participants : 0
+    };
+    run_challenges.insert(dataObj,null,function(err,doc){
+      if(err) console.log('error in saving run challenge');
+      res.json({status:1});
+    });    
+  }); 
+});
+
+router.route('/challenges/run/:challenge_id').put(function(req,res){
+  db_obj.collection('run_challenges').updateOne({"challenge_id":parseInt(req.params.challenge_id,10)},{
+    $set : req.body
+  },function(err,results) {
+    if (err) {console.log(err)};
+
+    res.json({status:1});
+  });
+})
+.delete(function(req,res){
+  var challenge_id = parseInt(req.params.challenge_id,10);
+
+  db_obj.collection('ride_challenges').deleteOne({
+    "challenge_id" : parseInt(req.params.challenge_id,10)
+  },function (err,results) {
+    if(err) console.log(err);
+    res.json({status:1});
+  });
 });
 
 // login and verification
