@@ -419,17 +419,27 @@ router.route('/challenges/ride').get(function(req,res){
 	
 	var ride_challenges = db_obj.collection('ride_challenges');
 	
-	var dataObj = {
-		name : data.name,
-		date : new Date(),
-		status : data.status,
-		description : data.description
-	}
-	
-	ride_challenges.insert(dataObj,null,function(err,doc){
-		if(err) console.log('error in saving ride challenge');
-		res.json({status:1});
-	});	
+  getNextSequence('challenge_id',function(res){
+    var dataObj = {
+      name : data.name,
+      challenge_id : data
+      start_date : new Date(data.start_date),
+      end_date : new Date(data.end_date),
+      status : data.status,
+      description : data.description,
+      additional_info: data.additional_info,
+      rules: data.rules,
+      prize_distance: data.badge_distance,
+      is_user_created:data.is_user_created,
+      is_inactive:data.is_inactive,
+      is_banned:data.is_banned,
+      total_participants : 0
+    }
+    ride_challenges.insert(dataObj,null,function(err,doc){
+      if(err) console.log('error in saving ride challenge');
+      res.json({status:1});
+    });    
+  });	
 });
 
 router.route('/challenges/run').get(function(req,res){
