@@ -422,7 +422,7 @@ router.route('/challenges/ride').get(function(req,res){
   getNextSequence('challenge_id',function(res){
     var dataObj = {
       name : data.name,
-      challenge_id : data
+      challenge_id : data,
       start_date : new Date(data.start_date),
       end_date : new Date(data.end_date),
       status : data.status,
