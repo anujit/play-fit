@@ -93,8 +93,29 @@ app.use(express.static('public'));
 
 app.use(function(req, res, next) {
   console.log(req.method);
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+
+  if(req.method.toUpperCase() == 'OPTIONS'){
+      res.writeHead(
+          "204",
+          "No Content",
+          {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+              "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+              "Access-Control-Max-Age": 10, // Seconds.
+              "Content-Length": 0
+          }
+      );
+
+      // End the response - we're not sending back any content.
+      return( res.end() );
+  } else {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");   
+  }
+
   next();
 });
 
@@ -511,7 +532,7 @@ router.route('/challenges/run/:challenge_id').put(function(req,res){
 .delete(function(req,res){
   var challenge_id = parseInt(req.params.challenge_id,10);
 
-  db_obj.collection('ride_challenges').deleteOne({
+  db_obj.collection('run_challenges').deleteOne({
     "challenge_id" : parseInt(req.params.challenge_id,10)
   },function (err,results) {
     if(err) console.log(err);
