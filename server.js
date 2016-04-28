@@ -93,28 +93,21 @@ app.use(express.static('public'));
 
 app.use(function(req, res, next) {
   console.log(req.method);
-
-
-  if(req.method.toUpperCase() == 'OPTIONS'){
-      res.writeHead(
-          "204",
-          "No Content",
-          {
-              "Access-Control-Allow-Origin": "*",
-              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-              "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
-              "Access-Control-Max-Age": 10, // Seconds.
-              "Content-Length": 0
-          }
-      );
-
-      // End the response - we're not sending back any content.
-      return( res.end() );
-  } else {
     res.header("Access-Control-Allow-Origin", "*");
     res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");   
-  }
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+  // if(req.method.toUpperCase() == 'OPTIONS'){
+  //     // res.writeHead(
+  //     //     "204",
+  //     //     "No Content"
+  //     // );
+
+  //     // // End the response - we're not sending back any content.
+  //     // return( res.end() );
+  // } else {
+   
+  // }
 
   next();
 });
@@ -552,6 +545,7 @@ router.route('/login').post(function(req,res){
 
 	var user_name = data.user_name;
 
+
 	console.log('finding the doc..')
 	var athletes = db_obj.collection('athletes');
 
@@ -564,7 +558,8 @@ router.route('/login').post(function(req,res){
 			getNextSequence('user_name',function(seq){
 				var dataObj = {
 					athlete_id:seq,
-					user_name : user_name,
+					user_name : data.user_name,
+          password : data.password || '',
 					firstname : data.firstname,
 					lastname : data.lastname,
 					profile_medium : data.profile_medium,
@@ -584,7 +579,18 @@ router.route('/login').post(function(req,res){
 		} else {
 			console.log('athlete present');
 			console.log(docs);
-			res.json({message:"athlete already present",athlete_id:docs[0].athlete_id});
+
+
+      // check password..
+      var password = docs[0].password;
+
+      if(password){
+        if(password === data.password) res.json({message:'Valid user credentials',status:1,athlete_id:docs[0].athlete_id});
+        else res.json({message:'Invalid user credentials',status:0,athlete_id:docs[0].athlete_id});
+      } else {
+        res.json({message:"Athlete already present",athlete_id:docs[0].athlete_id});        
+      }
+
 		}
 
 	});
