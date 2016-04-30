@@ -1,0 +1,18 @@
+Registration Part -- 
+
+Step 1: user registers via facebook/twitter/email id
+
+Step 2: create an athlete - Store the new athlete of Step 1 in the db. This will be a POST. New athlete will be stored in the athletes collection. athlete_id will be returned upon successful creation.
+	
+	Questions : 1. What if the athlete is already registered and attempts to sign in?
+	
+
+	
+Followers/Following Part -- 
+
+Step 1 : Find friends via facebook. Front end will list all the user's friends who are on playfit.
+Step 2 : User can follow a friend by clicking on the follow icon. Both - the friend's athlete_id and user's athlete_id will be passed in a POST call.
+Step 3 : User will be stored in the followers collection as a new friend's follower. New friend will be stored in the following collection as well.
+
+
+Activity part -- 

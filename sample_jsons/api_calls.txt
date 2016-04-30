@@ -1,0 +1,29 @@
+Anujit - athlete id : 13402294
+
+
+GET /athlete	-- Athlete profile
+
+POST /athlete -- Create an athlete
+
+GET /athletes/:id	-- Other athlete profile
+PUT /athlete		-- Update athlete
+GET /athletes/:id/stats	-- Totals and Stats
+
+GET /athlete/friends
+GET /athletes/:id/friends
+
+GET /athlete/followers
+GET /athletes/:id/followers
+
+---------------------------------------------------------
+
+GET /athlete/activities	-- list all athlete activities
+POST /activities	-- post an activity
+GET /activities/:id	--	retrieve an activity
+PUT /activities/:id -- update an activity
+
+
+
+----------------------------------------------------------
+
+POST /athletes/:id/friends -- 
