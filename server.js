@@ -135,7 +135,6 @@ router.route('/athlete/:id').get(function(req,res){
 router.route('/athlete/:id/activities').get(function(req,res){
   console.log('getting activities for athlete_id ', req.params.id);
 	var activities_coll = db_obj.collection('activities');
-
 	activities_coll.find({athlete_id:req.params.id}).toArray(function(err,docs){
 		console.log('inside cb');
 		//if(err) console.log(err);
