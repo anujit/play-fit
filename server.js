@@ -165,8 +165,7 @@ router.route('/athlete/:id/activities').post(function(req, res) {
 			workout_type: data.workout_type
 	  };
 
-		var dataParams = data;
-		dataParams = {
+    dataParams = {
   "id": 321934,
   "resource_state": 3,
   "external_id": "2012-12-12_21-40-32-80-29011.fit",
@@ -175,7 +174,7 @@ router.route('/athlete/:id/activities').post(function(req, res) {
     "id": 7,
     "resource_state": 1
   },
-	"athlete_id":7,
+  "athlete_id":7,
   "name": "Evening Ride",
   "description": "the best ride ever",
   "distance": 4475.4,
@@ -370,6 +369,31 @@ router.route('/athlete/:id/activities').post(function(req, res) {
     }
   ]
 };
+
+
+
+		var dataParams = {
+      id : seq,
+      activity_id : seq,
+      athlete : {
+        id : data.athlete_id
+      },
+      athlete_id : data.athlete_id,
+      name : data.name,
+      description : data.description,
+      distance : data.distance,
+      moving_time : data.moving_time,
+      elapsed_time : data.elapsed_time,
+      total_elevation_gain : data.total_elevation_gain,
+      elev_high : data.elev_high,
+      elev_low : data.elev_low,
+      type : data.type,
+      start_date : data.start_date,
+      start_date_local : data.start_date_local,
+      timezone : data.timezone,
+      start_latlng : data.start_latlng,
+      end_latlng : data.end_latlng
+    };
 
 		var activity_coll = db_obj.collection('activities');
 		console.log('inserting in activities collection');
