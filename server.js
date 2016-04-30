@@ -135,7 +135,7 @@ router.route('/athlete/:id').get(function(req,res){
 router.route('/athlete/:id/activities').get(function(req,res){
   console.log('getting activities for athlete_id ', req.params.id);
 	var activities_coll = db_obj.collection('activities');
-	activities_coll.find({athlete_id:req.params.id}).toArray(function(err,docs){
+	activities_coll.find({athlete_id:parseInt(req.params.id,10)}).toArray(function(err,docs){
 		console.log('inside cb');
 		//if(err) console.log(err);
 		console.log(docs);
@@ -375,9 +375,9 @@ router.route('/athlete/:id/activities').post(function(req, res) {
       id : seq,
       activity_id : seq,
       athlete : {
-        id : data.athlete_id
+        id : parseInt(data.athlete_id,10),
       },
-      athlete_id : data.athlete_id,
+      athlete_id : parseInt(data.athlete_id,10),
       name : data.name,
       description : data.description,
       distance : data.distance,
