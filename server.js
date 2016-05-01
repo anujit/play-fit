@@ -150,249 +150,32 @@ router.route('/athlete/:id/activities').post(function(req, res) {
   console.log("body :", typeof data);
 	var athlete_id = req.params.id;
 	getNextSequence('activity_id',function(seq){
-	  var dataParams = {
-			athlete_id:data.athlete_id,
-			activity_id: seq,
-			name: data.name,
-			distance: data.distance,
-			elapsed_time: data.elapsed_time,
-			type: data.type,
-			start_date: data.start_date,
-			like_count: data.like_count,
-			comment_count: data.comment_count,
-			photo_count: data.photo_count,
-			workout_type: data.workout_type
-	  };
-
-    dataParams = {
-  "id": 321934,
-  "resource_state": 3,
-  "external_id": "2012-12-12_21-40-32-80-29011.fit",
-  "upload_id": 361720,
-  "athlete": {
-    "id": 7,
-    "resource_state": 1
-  },
-  "athlete_id":7,
-  "name": "Evening Ride",
-  "description": "the best ride ever",
-  "distance": 4475.4,
-  "moving_time": 1303,
-  "elapsed_time": 1333,
-  "total_elevation_gain": 154.5,
-  "elev_high": 331.4,
-  "elev_low": 276.1,
-  "type": "Run",
-  "start_date": "2012-12-13T03:43:19Z",
-  "start_date_local": "2012-12-12T19:43:19Z",
-  "timezone": "(GMT-08:00) America/Los_Angeles",
-  "start_latlng": [
-    37.8,
-    -122.27
-  ],
-  "end_latlng": [
-    37.8,
-    -122.27
-  ],
-  "achievement_count": 6,
-  "kudos_count": 1,
-  "comment_count": 1,
-  "athlete_count": 1,
-  "photo_count": 0,
-  "total_photo_count": 0,
-  "photos": {
-    "count": 2,
-    "primary": {
-      "id": null,
-      "source": 1,
-      "unique_id": "d64643ec9205",
-      "urls": {
-        "100": "http://pics.com/28b9d28f-128x71.jpg",
-        "600": "http://pics.com/28b9d28f-768x431.jpg"
-      }
-    }
-  },
-  "map": {
-    "id": "a32193479",
-    "polyline": "kiteFpCBCD]",
-    "summary_polyline": "{cteFjcaBkCx@gEz@",
-    "resource_state": 3
-  },
-  "trainer": false,
-  "commute": false,
-  "manual": false,
-  "private": false,
-  "flagged": false,
-  "workout_type": 2,
-  "gear": {
-    "id": "g138727",
-    "primary": true,
-    "name": "Nike Air",
-    "distance": 88983.1,
-    "resource_state": 2
-  },
-  "average_speed": 3.4,
-  "max_speed": 4.514,
-  "calories": 390.5,
-  "has_kudoed": false,
-  "segment_efforts": [
-    {
-      "id": 543755075,
-      "resource_state": 2,
-      "name": "Dash for the Ferry",
-      "segment": {
-        "id": 2417854,
-        "resource_state": 2,
-        "name": "Dash for the Ferry",
-        "activity_type": "Run",
-        "distance": 1055.11,
-        "average_grade": -0.1,
-        "maximum_grade": 2.7,
-        "elevation_high": 4.7,
-        "elevation_low": 2.7,
-        "start_latlng": [
-          37.7905785,
-          -122.27015622
-        ],
-        "end_latlng": [
-          37.79536649,
-          -122.2796434
-        ],
-        "climb_category": 0,
-        "city": "Oakland",
-        "state": "CA",
-        "country": "United States",
-        "private": false
-      },
-      "activity": {
-        "id": 32193479,
-        "resource_state": 1
-      },
-      "athlete": {
-        "id": 3776,
-        "resource_state": 1
-      },
-      "kom_rank": 2,
-      "pr_rank": 1,
-      "elapsed_time": 304,
-      "moving_time": 304,
-      "start_date": "2012-12-13T03:48:14Z",
-      "start_date_local": "2012-12-12T19:48:14Z",
-      "distance": 1052.33,
-      "start_index": 5348,
-      "end_index": 6485,
-      "hidden": false,
-      "achievements": [
-        {
-          "type_id": 2,
-          "type": "overall",
-          "rank": 2
-        },
-        {
-          "type_id": 3,
-          "type": "pr",
-          "rank": 1
-        }
-      ]
-    }
-  ],
-  "splits_metric": [
-    {
-      "distance": 1002.5,
-      "elapsed_time": 276,
-      "elevation_difference": 0,
-      "moving_time": 276,
-      "split": 1
-    },
-    {
-      "distance": 475.7,
-      "elapsed_time": 139,
-      "elevation_difference": 0,
-      "moving_time": 139,
-      "split": 5
-    }
-  ],
-  "splits_standard": [
-    {
-      "distance": 1255.9,
-      "elapsed_time": 382,
-      "elevation_difference": 3.2,
-      "moving_time": 382,
-      "split": 3
-    }
-  ],
-  "best_efforts": [
-    {
-      "id": 273063933,
-      "resource_state": 2,
-      "name": "400m",
-      "segment": null,
-      "activity": {
-        "id": 32193479
-      },
-      "athlete": {
-        "id": 3776
-      },
-      "kom_rank": null,
-      "pr_rank": null,
-      "elapsed_time": 105,
-      "moving_time": 106,
-      "start_date": "2012-12-13T03:43:19Z",
-      "start_date_local": "2012-12-12T19:43:19Z",
-      "distance": 400,
-      "achievements": [
-
-      ]
-    },
-    {
-      "id": 273063935,
-      "resource_state": 2,
-      "name": "1/2 mile",
-      "segment": null,
-      "activity": {
-        "id": 32193479
-      },
-      "athlete": {
-        "id": 3776
-      },
-      "kom_rank": null,
-      "pr_rank": null,
-      "elapsed_time": 219,
-      "moving_time": 220,
-      "start_date": "2012-12-13T03:43:19Z",
-      "start_date_local": "2012-12-12T19:43:19Z",
-      "distance": 805,
-      "achievements": [
-
-      ]
-    }
-  ]
-};
-
-
-
-		var dataParams = {
-      id : seq,
-      activity_id : seq,
-      athlete : {
-        id : parseInt(data.athlete_id,10),
-      },
-      athlete_id : parseInt(data.athlete_id,10),
-      name : data.name,
-      description : data.description,
-      distance : data.distance,
-      moving_time : data.moving_time,
-      elapsed_time : data.elapsed_time,
-      total_elevation_gain : data.total_elevation_gain,
-      elev_high : data.elev_high,
-      elev_low : data.elev_low,
-      type : data.type,
-      start_date : data.start_date,
-      start_date_local : data.start_date_local,
-      timezone : data.timezone,
-      start_latlng : data.start_latlng,
-      end_latlng : data.end_latlng
-    };
+		// var dataParams = {
+  //     id : seq,
+  //     activity_id : seq,
+  //     athlete : {
+  //       id : parseInt(data.athlete_id,10),
+  //     },
+  //     athlete_id : parseInt(data.athlete_id,10),
+  //     name : data.name,
+  //     description : data.description,
+  //     distance : data.distance,
+  //     moving_time : data.moving_time,
+  //     elapsed_time : data.elapsed_time,
+  //     total_elevation_gain : data.total_elevation_gain,
+  //     elev_high : data.elev_high,
+  //     elev_low : data.elev_low,
+  //     type : data.type,
+  //     start_date : data.start_date,
+  //     start_date_local : data.start_date_local,
+  //     timezone : data.timezone,
+  //     start_latlng : data.start_latlng,
+  //     end_latlng : data.end_latlng
+  //   };
+  dataParams = data;
+  dataParams.id = seq;
+  dataParams.activity_id = seq;
+  dataParams.athlete_id = parseInt(data.athlete.id,10);
 
 		var activity_coll = db_obj.collection('activities');
 		console.log('inserting in activities collection');
