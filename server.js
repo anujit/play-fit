@@ -61,28 +61,6 @@ function getNextSequence(name,cb){
 
 }
 
-// mongoose.connect(db, function() {
-  // console.log('connected to db..');
-	// db.collection('test').insert({a:'aa',b:'hello'});
-// });
-
-// var Schema = mongoose.Schema;
-//
-// var activitySchema = new Schema({
-//   activity_id: Number,
-// 	athlete_id:Number,
-//   name: String,
-//   distance: Number,
-//   elapsed_time: Number,
-//   type: String,
-//   start_date: Date,
-//   like_count: Number,
-//   comment_count: Number,
-//   photo_count: Number,
-//   workout_type: Number
-// });
-//
-// var Activity = mongoose_connection.model('Activity', activitySchema);
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -113,9 +91,6 @@ app.use(function(req, res, next) {
 });
 
 var router = express.Router();
-
-
-
 
 
 //get athlete
@@ -211,6 +186,7 @@ router.route('/athlete/:id/friends').get(function(req,res){
   console.log('athlete\'s friends')
 });
 
+// get a list of all users
 router.route('/athletes').get(function(req,res){
 	var athletes_coll = db_obj.collection('athletes');
 	athletes_coll.find().toArray(function(err,docs){
@@ -218,6 +194,7 @@ router.route('/athletes').get(function(req,res){
 	});
 });
 
+// update a user
 router.route('/athletes/:user_name').put(function(req,res){
 	var athletes_coll = db_obj.collection('athletes');
 	athletes_coll.find({user_name : req.params.user_name}).toArray(function(err,docs){
@@ -228,6 +205,7 @@ router.route('/athletes/:user_name').put(function(req,res){
 	});	
 });
 
+// read/create ride challenges
 router.route('/challenges/ride').get(function(req,res){
 	var ride_challenges = db_obj.collection('ride_challenges');
 	
@@ -263,6 +241,7 @@ router.route('/challenges/ride').get(function(req,res){
   });	
 });
 
+// update/delete a ride challenge
 router.route('/challenges/ride/:challenge_id').put(function(req,res){
   db_obj.collection('ride_challenges').updateOne({"challenge_id":parseInt(req.params.challenge_id,10)},{
     $set : req.body
@@ -284,6 +263,7 @@ router.route('/challenges/ride/:challenge_id').put(function(req,res){
 
 });
 
+// read/create run challenges
 router.route('/challenges/run').get(function(req,res){
 	var run_challenges = db_obj.collection('run_challenges');
 	
@@ -319,6 +299,7 @@ router.route('/challenges/run').get(function(req,res){
   }); 
 });
 
+// update/delete a run challenge
 router.route('/challenges/run/:challenge_id').put(function(req,res){
   db_obj.collection('run_challenges').updateOne({"challenge_id":parseInt(req.params.challenge_id,10)},{
     $set : req.body
@@ -337,6 +318,34 @@ router.route('/challenges/run/:challenge_id').put(function(req,res){
     if(err) console.log(err);
     res.json({status:1});
   });
+});
+
+// join challenge..
+
+router.route('/challenges/:challenge_id').post(function (req,res) {
+	var data = req.body;
+	var dataObj = {};
+
+	dataObj = {
+		athlete_id : data.athlete_id,
+		firstname : data.firstname,
+		lastname : data.lastname,
+		challenge_type : data.challenge_type
+	};
+
+	var athletes_coll = db_obj.collection('athletes');
+
+  db_obj.collection('athletes').updateOne({"athlete_id":parseInt(data.athlete_id,10)},{
+    $push : {joined_challenges:req.params.challenge_id}
+  },function(err,results) {
+    if (err) {console.log(err)};
+
+    res.json({status:1});
+  });	
+
+})
+.get(function (req,res) {
+	
 });
 
 // login and verification
@@ -365,7 +374,7 @@ router.route('/login').post(function(req,res){
 				var dataObj = {
 					athlete_id:seq,
 					user_name : data.user_name,
-          password : data.password || '',
+          			password : data.password || '',
 					firstname : data.firstname,
 					lastname : data.lastname,
 					profile_medium : data.profile_medium,
@@ -378,6 +387,7 @@ router.route('/login').post(function(req,res){
 					is_premium : data.is_premium || false,
 					is_blocked : data.is_blocked || false
 				}
+				dataObj.joined_challenges = [];
 				athletes.insert(dataObj,null,function(err,doc){
 					res.json({message:user_name+" registered successfully",athlete_id:seq});
 				});
