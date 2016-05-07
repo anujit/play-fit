@@ -336,7 +336,7 @@ router.route('/challenges/:challenge_id').post(function (req,res) {
 	var athletes_coll = db_obj.collection('athletes');
 
   db_obj.collection('athletes').updateOne({"athlete_id":parseInt(data.athlete_id,10)},{
-    $push : {joined_challenges:req.params.challenge_id}
+    $addToSet : {joined_challenges:req.params.challenge_id}
   },function(err,results) {
     if (err) {console.log(err)};
 
