@@ -340,7 +340,16 @@ router.route('/challenges/:challenge_id').post(function (req,res) {
   },function(err,results) {
     if (err) {console.log(err)};
 
-    res.json({status:1});
+    // may need to use projection here (get only firstname, lastname, user_name)
+    athletes_coll.find({joined_challenges:req.params.challenge_id}).toArray(function (err,docs) {
+    	console.log(docs);
+	    var challenge_obj = {
+	    	"joined_athletes": docs,
+	    	"status":1
+	    }
+
+	    res.json(challenge_obj);    	
+    });
   });	
 
 })
