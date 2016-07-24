@@ -162,6 +162,18 @@ router.route('/athlete/:id/activities').post(function(req, res) {
 			  message: 'Activity created successfully..',
 			  id: seq
 			});
+
+			// start fanning out..
+
+			// we need to create a news feed item for all of the athlete's followers..
+			// so, first, find all the athlete's followers..
+
+			var newsfeed_coll = db_obj.collection('newsfeed');
+
+			var obj = {};
+
+
+			newsfeed_coll.insert();
 		});
 
 	  //console.log("data params : ", dataParams);
