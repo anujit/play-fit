@@ -125,35 +125,19 @@ router.route('/athlete/:id/activities').post(function(req, res) {
   console.log("body :", typeof data);
 	var athlete_id = req.params.id;
 	getNextSequence('activity_id',function(seq){
-		// var dataParams = {
-  //     id : seq,
-  //     activity_id : seq,
-  //     athlete : {
-  //       id : parseInt(data.athlete_id,10),
-  //     },
-  //     athlete_id : parseInt(data.athlete_id,10),
-  //     name : data.name,
-  //     description : data.description,
-  //     distance : data.distance,
-  //     moving_time : data.moving_time,
-  //     elapsed_time : data.elapsed_time,
-  //     total_elevation_gain : data.total_elevation_gain,
-  //     elev_high : data.elev_high,
-  //     elev_low : data.elev_low,
-  //     type : data.type,
-  //     start_date : data.start_date,
-  //     start_date_local : data.start_date_local,
-  //     timezone : data.timezone,
-  //     start_latlng : data.start_latlng,
-  //     end_latlng : data.end_latlng
-  //   };
-  dataParams = data;
-  dataParams.id = seq;
-  dataParams.activity_id = seq;
-  dataParams.athlete_id = parseInt(data.athlete.id,10);
+
+		console.log('inside callback..')
+
+		dataParams = data;
+		dataParams.id = seq;
+		dataParams.activity_id = seq;
+		//dataParams.athlete_id = parseInt(data.athlete.id,10);
+		dataParams.athlete_id = parseInt(data.athlete_id, 10);
 
 		var activity_coll = db_obj.collection('activities');
+
 		console.log('inserting in activities collection');
+
 		activity_coll.insert(dataParams,null,function(err,docs){
 			console.log(docs);
 			if (err) res.send(err);
@@ -168,21 +152,23 @@ router.route('/athlete/:id/activities').post(function(req, res) {
 			// we need to create a news feed item for all of the athlete's followers..
 			// so, first, find all the athlete's followers..
 
-			var newsfeed_coll = db_obj.collection('newsfeed');
+			var followers_coll = db_obj.collection('followers');
 
-			var obj = {};
+			var followers_cursor = followers_coll.find({_f : parseInt(dataParams.athlete_id,10)},{_t:true});
 
+			followers_cursor.each(function(err,doc){
+				if(doc != null){
+					var newsfeed_coll = db_obj.collection('newsfeed');
 
-			newsfeed_coll.insert();
+					var obj = {};
+
+					obj.userId = doc._t;
+					obj.activityId = seq;
+
+					newsfeed_coll.insert(obj);
+				}
+			});
 		});
-
-	  //console.log("data params : ", dataParams);
-	//  var activity = new Activity(dataParams);
-		//console.log('saving data',activity);
-	  // activity.save(function(err, response) {
-		// 	console.log("save respose", response);
-		//
-		// });
 	});
 });
 
@@ -190,7 +176,31 @@ router.route('/athlete/:id/activities').post(function(req, res) {
 router.route('/athlete/:id/friends/activities').get(function(req,res){
   console.log('getting friends activities');
 
+  // fetch all the newsfeed objects for the athlete from the newsfeed collection..
 
+  var athlete_id = req.params.id;
+
+  var newsfeed_coll = db_obj.collection('newsfeed');
+
+  newsfeed_coll.find({userId:parseInt(athlete_id,10)}).toArray(function(err,docs){
+  	console.log(docs);	// these are the activity ids we need to fetch from Activities collection..
+
+  	var activity_ids = [];
+  	var i;
+  	for(i=0;i<docs.length;i++){
+  		activity_ids.push(parseInt(docs[i].activityId));
+  	}
+
+  	// query these..
+
+  	var activity_coll = db_obj.collection('activities');
+
+  	activity_coll.find({activity_id:{$in:activity_ids}}).toArray(function(err,docs){
+  		if(err) throw err;
+
+  		res.json(docs);
+  	});
+  });
 });
 
 // get a list of the user's friends
@@ -447,13 +457,13 @@ router.route('/graph').post(function(req,res){
 	}
 
 	var followers_obj = {
-		_f : data.athlete_id,
-		_t : data.following_athlete_id
+		_f : parseInt(data.athlete_id,10),
+		_t : parseInt(data.following_athlete_id,10)
 	};
 
 	var following_obj = {
-		_f : data.following_athlete_id,
-		_t : data.athlete_id
+		_f : parseInt(data.following_athlete_id,10),
+		_t : parseInt(data.athlete_id,10)
 	};
 
 	followers_coll.insert(followers_obj,null,function(err,docs){
